@@ -11,10 +11,13 @@ CREATE TABLE IF NOT EXISTS faculty (
     short_code TEXT,
     name TEXT,
     subject TEXT,
-    email TEXT,
+    email TEXT UNIQUE,
     cabin TEXT
 )
 """)
+
+cursor.execute("DELETE FROM faculty")
+
 
 # Insert faculty data (REAL data)
 faculty_data = [
@@ -34,7 +37,7 @@ faculty_data = [
 ]
 
 cursor.executemany("""
-INSERT INTO faculty (short_code, name, subject, email, cabin)
+INSERT OR IGNORE INTO faculty (short_code, name, subject, email, cabin)
 VALUES (?, ?, ?, ?, ?)
 """, faculty_data)
 
