@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #020617;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        form {
+            background: #111827;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<form method="POST">
+    <h3>🔐 Admin Login</h3>
+
+    <input 
+        type="password" 
+        name="password" 
+        placeholder="Admin Password" 
+        required
+    >
+
+    <button type="submit">Login</button>
+
+    <!-- Back to chatbot link -->
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="/" style="display: inline-block; color: #93c5fd; text-decoration: none;">
+            ⬅ Back to Chatbot
+        </a>
+    </div>
+</form>
+</body>
+</html>

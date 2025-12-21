@@ -1,0 +1,18 @@
+class,day,time,subject,room,teacher
+Extc A,Monday,8:30-9:30,PLM,Audi,TP
+Extc A,Monday,9:30-10:30,MCS,CR-13,PK
+Extc A,Monday,10:40-11:40,MWE,CR-8,KR
+Extc A,Monday,11:40-12:40,CCS,CR-8,TD
+Extc A,Tuesday,9:30-10:30,BDA,CR-9,AK
+Extc A,Tuesday,10:40-11:40,MWE,CR-8,KR
+Extc A,Tuesday,11:40-12:40,CCS,CR-8,TD
+Extc A,Tuesday,1:10-3:10,CCS-LAB,605B,TD
+Extc A,Wednesday,8:30-9:30,PLM,Audi,TP
+Extc A,Wednesday,9:30-10:30,BDA,CR-9,AK
+Extc A,Wednesday,10:40-11:40,MWE,CR-8,KR
+Extc A,Wednesday,11:40-12:40,MCS,CR-8,PK
+Extc A,Thursday,8:30-9:30,PLM,Audi,TP
+Extc A,Thursday,9:30-10:30,BDA,CR-9,AK
+Extc A,Thursday,10:40-12:40,BDA-LAB,602A,RA
+Extc A,Friday,9:30-10:30,MCS,CR-8,PK
+Extc A,Friday,10:40-12:40,MWE-LAB,604B,KR

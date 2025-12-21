@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Notice</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 30px;
+        }
+        form {
+            max-width: 500px;
+            margin: auto;
+            background: #111827;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">✏️ Edit Notice</h2>
+
+<form method="POST">
+    <input type="text" name="title" value="{{ notice[1] }}" required>
+    <textarea name="description" required>{{ notice[2] }}</textarea>
+
+    <select name="category">
+        <option value="Exam" {% if notice[3]=='Exam' %}selected{% endif %}>Exam</option>
+        <option value="Academic" {% if notice[3]=='Academic' %}selected{% endif %}>Academic</option>
+        <option value="General" {% if notice[3]=='General' %}selected{% endif %}>General</option>
+    </select>
+
+    <button type="submit">💾 Update Notice</button>
+</form>
+
+</body>
+</html>

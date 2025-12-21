@@ -1,0 +1,157 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Notices</title>
+
+<a href="/admin-logout" style="
+    color: white;
+    text-decoration: none;
+    background: #dc2626;
+    padding: 8px 12px;
+    border-radius: 6px;
+    float: right;
+">
+    🚪 Logout
+</a>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 30px;
+        }
+        form {
+            max-width: 500px;
+            margin: auto;
+            background: #111827;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">🔐 Admin Panel – Add Notice</h2>
+
+<form method="POST" action="/admin/add-notice">
+    <input type="text" name="title" placeholder="Notice Title" required>
+    
+    <textarea name="description" placeholder="Notice Description" required></textarea>
+    
+    <select name="category">
+        <option value="Exam">Exam</option>
+        <option value="Academic">Academic</option>
+        <option value="General">General</option>
+    </select>
+
+    <button type="submit">Add Notice</button>
+</form>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Notices</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 30px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+        form, .notice {
+            background: #111827;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background: #dc2626;
+            margin-top: 10px;
+        }
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="top-actions">
+        <h2>🔐 Admin Panel – Notices</h2>
+        <a href="/admin-logout">🚪 Logout</a>
+    </div>
+
+    <!-- ADD NOTICE FORM -->
+    <form method="POST" action="/admin/add-notice">
+        <input type="text" name="title" placeholder="Notice Title" required>
+        <textarea name="description" placeholder="Notice Description" required></textarea>
+        <select name="category">
+            <option value="Exam">Exam</option>
+            <option value="Academic">Academic</option>
+            <option value="General">General</option>
+        </select>
+        <button type="submit">➕ Add Notice</button>
+    </form>
+
+    <!-- EXISTING NOTICES -->
+    {% for n in notices %}
+    <div class="notice">
+        <strong>{{ n[1] }}</strong><br>
+        {{ n[2] }}<br>
+        <small>Category: {{ n[3] }} | Date: {{ n[4] }}</small>
+
+        <form method="GET" action="/admin/edit-notice/{{ n[0] }}">
+            <button type="submit">✏️ Edit</button>
+        </form>
+
+        <form method="POST" action="/admin/delete-notice/{{ n[0] }}">
+            <button class="delete-btn" type="submit">🗑️ Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
