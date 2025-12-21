@@ -5,6 +5,9 @@ from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 import sqlite3
 from flask import session, redirect, url_for
+import subprocess
+subprocess.run(["python", "db_setup.py"])
+
 
 load_dotenv()
 
@@ -331,4 +334,4 @@ def chat():
         return jsonify({"reply": f"Error: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run()
+    app.run(    )
