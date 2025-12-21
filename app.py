@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import sqlite3
 from flask import session, redirect, url_for
 import subprocess
-subprocess.run(["python", "db_setup.py"])
 
 
 load_dotenv()
