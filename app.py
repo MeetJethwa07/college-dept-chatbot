@@ -62,6 +62,27 @@ def get_latest_notices():
     conn.close()
     return rows
 
+def get_dashboard_stats():
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM faculty")
+    faculty_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM notices")
+    notice_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM timetable")
+    timetable_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM chatbot_logs")
+    chat_count = cursor.fetchone()[0]
+
+    conn.close()
+
+    return faculty_count, notice_count, timetable_count, chat_count
+
+
 def get_faculty_info(query):
     query = query.lower()
     results = []
@@ -125,15 +146,37 @@ def admin():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
+    # -------- DASHBOARD STATS --------
+    cursor.execute("SELECT COUNT(*) FROM faculty")
+    faculty_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM notices")
+    notice_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM timetable")
+    timetable_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM chatbot_logs")
+    chat_count = cursor.fetchone()[0]
+
+    # -------- NOTICES LIST --------
     cursor.execute("""
         SELECT id, title, description, category, posted_on
         FROM notices
         ORDER BY posted_on DESC
     """)
     notices = cursor.fetchall()
+
     conn.close()
 
-    return render_template("admin.html", notices=notices)
+    return render_template(
+        "admin.html",
+        notices=notices,
+        faculty_count=faculty_count,
+        notice_count=notice_count,
+        timetable_count=timetable_count,
+        chat_count=chat_count
+    )
 
 
 @app.route("/admin/add-notice", methods=["POST"])
