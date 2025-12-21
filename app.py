@@ -146,7 +146,16 @@ def admin():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    # -------- DASHBOARD STATS --------
+    # 🔧 Ensure chatbot_logs table exists (FIX)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chatbot_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_query TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # Dashboard stats
     cursor.execute("SELECT COUNT(*) FROM faculty")
     faculty_count = cursor.fetchone()[0]
 
@@ -159,7 +168,7 @@ def admin():
     cursor.execute("SELECT COUNT(*) FROM chatbot_logs")
     chat_count = cursor.fetchone()[0]
 
-    # -------- NOTICES LIST --------
+    # Notices
     cursor.execute("""
         SELECT id, title, description, category, posted_on
         FROM notices
