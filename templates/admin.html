@@ -67,55 +67,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel - Notices</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #0f172a;
-            color: white;
-            padding: 30px;
-        }
-        .container {
-            max-width: 700px;
-            margin: auto;
-        }
-        form, .notice {
-            background: #111827;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        input, textarea, select, button {
-            width: 100%;
-            margin-top: 8px;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-        }
-        button {
-            background: #2563eb;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .delete-btn {
-            background: #dc2626;
-            margin-top: 10px;
-        }
-        .top-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        a {
-            color: #93c5fd;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
+    <head>
+        <title>Admin Panel - Notices</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
 
-<div style="border:1px solid #ccc; padding:15px; margin-bottom:20px;">
+    <style>
+        /* ================= ADMIN THEME (KJSIT) ================= */
+
+.admin-body {
+    background: #f4f7fb;
+    font-family: Arial, sans-serif;
+    color: #1f2937;
+    padding: 30px;
+}
+
+.admin-container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.admin-card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #dbe2ea;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-header h2 {
+    color: #06294a;
+}
+
+.admin-dashboard {
+    border: 2px solid #06294a;
+    background: #eef4fc;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+}
+
+.admin-dashboard h2 {
+    color: #06294a;
+}
+
+.admin-btn {
+    background: #06294a;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.admin-btn.delete {
+    background: #dc2626;
+}
+
+.admin-link {
+    color: #06294a;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    </style>
+
+<body class="admin-body">
+    <div style="text-align:center; margin-bottom:20px;">
+    <img src="{{ url_for('static', filename='kjsit_logo.png') }}" 
+         alt="KJSIT Logo" 
+         height="60">
+</div>
+<div class="admin-dashboard">
   <h2>📊 Dashboard</h2>
   <p>👨‍🏫 Total Faculty: <b>{{ faculty_count }}</b></p>
   <p>📢 Total Notices: <b>{{ notice_count }}</b></p>
@@ -123,9 +155,7 @@
   <p>🤖 Chatbot Queries: <b>{{ chat_count }}</b></p>
 </div>
 
-
-<div class="container">
-
+<div class="admin-container">
     <div class="top-actions">
         <h2>🔐 Admin Panel – Notices</h2>
         <a href="/admin-logout">🚪 Logout</a>
@@ -140,12 +170,12 @@
             <option value="Academic">Academic</option>
             <option value="General">General</option>
         </select>
-        <button type="submit">➕ Add Notice</button>
+        <button class="admin-btn" type="submit">➕ Add Notice</button>
     </form>
 
     <!-- EXISTING NOTICES -->
     {% for n in notices %}
-    <div class="notice">
+    <div class="admin-card">
         <strong>{{ n[1] }}</strong><br>
         {{ n[2] }}<br>
         <small>Category: {{ n[3] }} | Date: {{ n[4] }}</small>
@@ -155,7 +185,7 @@
         </form>
 
         <form method="POST" action="/admin/delete-notice/{{ n[0] }}">
-            <button class="delete-btn" type="submit">🗑️ Delete</button>
+            <button class="admin-btn delete" type="submit">🗑️ Delete</button>
         </form>
     </div>
     {% endfor %}

@@ -1,10 +1,10 @@
 import sqlite3
 
-# Connect to SQLite DB (creates file if not exists)
+# Connect to SQLite DB
 conn = sqlite3.connect("college.db")
 cursor = conn.cursor()
 
-# Create faculty table
+# ================= FACULTY TABLE =================
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS faculty (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,10 +16,9 @@ CREATE TABLE IF NOT EXISTS faculty (
 )
 """)
 
+# Clear faculty (static data)
 cursor.execute("DELETE FROM faculty")
 
-
-# Insert faculty data (REAL data)
 faculty_data = [
     ("PK", "Pradnya Vijay Kamble", "Mobile Communication System", "pkamble@somaiya.edu", "A-01"),
     ("SR", "Sarika Yuvraj Mane", "Signal And System", "sarika@somaiya.edu", "A-02"),
@@ -41,7 +40,8 @@ INSERT OR IGNORE INTO faculty (short_code, name, subject, email, cabin)
 VALUES (?, ?, ?, ?, ?)
 """, faculty_data)
 
-# Create notices table
+
+# ================= NOTICES TABLE =================
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS notices (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,6 +51,9 @@ CREATE TABLE IF NOT EXISTS notices (
     posted_on DATE
 )
 """)
+
+# Clear notices (static data)
+cursor.execute("DELETE FROM notices")
 
 notices_data = [
     ("Unit Test 1", "UT-1 starts from 20 September", "Exam", "2025-09-15"),
@@ -63,7 +66,8 @@ INSERT INTO notices (title, description, category, posted_on)
 VALUES (?, ?, ?, ?)
 """, notices_data)
 
-# Create timetable table
+
+# ================= TIMETABLE TABLE =================
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS timetable (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +79,10 @@ CREATE TABLE IF NOT EXISTS timetable (
     teacher TEXT
 )
 """)
+
+# Clear timetable (static data)
+cursor.execute("DELETE FROM timetable")
+
 timetable_data = [
     ("EXTC A", "monday", "9:00-10:00", "Microcontroller", "Lab-1", "Swati Shinde"),
     ("EXTC A", "monday", "10:00-11:00", "Python", "Room-204", "Pankaj Deshmukh"),
@@ -87,7 +95,17 @@ VALUES (?, ?, ?, ?, ?, ?)
 """, timetable_data)
 
 
+# ================= CHATBOT LOGS (DYNAMIC) =================
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS chatbot_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_query TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+
 conn.commit()
 conn.close()
 
-print("✅ Faculty database created successfully!")
+print("✅ Database setup completed successfully")

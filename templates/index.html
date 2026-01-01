@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KJSIT AI-Chatbot</title>
+    <title>KJSIT ChatBot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="chat-container">
-        <h1>KJSIT AI-Chatbot</h1>
+        <div style="text-align:center; margin-bottom:15px;">
+            <img src="{{ url_for('static', filename='kjsit_logo.png') }}" height="55">
+            <h2 style="color:#06294a; margin-top:8px;">KJSIT Support Bot</h2>
+        </div>
+
         <div id="chat-window">
             <div class="message bot">
                 <div class="avatar">🤖</div>
@@ -29,8 +33,6 @@
 ">
     🔐 Admin
 </a>
-
-
         <form id="chat-form">
             <input
                 type="text"

@@ -1,4 +1,4 @@
-* {
+/* * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -126,4 +126,269 @@ body {
 
 #send-btn:hover {
     background: #38bdf8;
+} */
+
+/* ================= RESET ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ================= DEFAULT BODY ================= */
+body {
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+/* =================================================
+   CHATBOT PAGE STYLES
+   ================================================= */
+
+/* Center chatbot only */
+body:not(.admin-body) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Chat container */
+.chat-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 700px;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #dbe2ea;
+    animation: floatIn 0.4s ease;
+}
+
+/* Chat title */
+.chat-container h1,
+.chat-container h2 {
+    text-align: center;
+    margin-bottom: 12px;
+    color: #06294a;
+}
+
+/* Chat window */
+#chat-window {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #dbe2ea;
+    padding: 12px;
+    height: 420px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+/* Messages */
+.message {
+    display: flex;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+/* Avatars */
+.message .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf0f8;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.message.user .avatar {
+    background: #06294a;
+    color: #ffffff;
+}
+
+/* Chat bubbles */
+.bubble {
+    white-space: normal;
+    padding: 10px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.message.bot .bubble {
+    background: #eaf0f8;
+    border-bottom-left-radius: 2px;
+}
+
+.message.user .bubble {
+    background: #06294a;
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+}
+
+/* Chat input */
+#chat-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #1f2937;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+#user-input:focus {
+    border-color: #06294a;
+}
+
+/* Send button */
+#send-btn {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    background: #06294a;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: transform 0.1s ease, background 0.15s ease;
+}
+
+#send-btn:hover {
+    background: #041e38;
+}
+
+#send-btn:active {
+    transform: scale(0.97);
+}
+
+/* Chat animation */
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =================================================
+   ADMIN PAGE STYLES
+   ================================================= */
+
+body.admin-body {
+    display: block;
+    min-height: auto;
+    padding: 30px;
+    background: #f4f7fb;
+}
+
+/* Dashboard */
+.admin-dashboard {
+    border: 2px solid #06294a;
+    background: #eef4fc;
+    padding: 18px;
+    margin-bottom: 25px;
+    border-radius: 14px;
+}
+
+.admin-dashboard h2 {
+    color: #06294a;
+    margin-bottom: 10px;
+}
+
+/* Admin container */
+.admin-container {
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Admin cards */
+.admin-card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #dbe2ea;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* Admin header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-header h2 {
+    color: #06294a;
+}
+
+/* Admin inputs (FIXED ISSUE) */
+body.admin-body input,
+body.admin-body textarea,
+body.admin-body select {
+    background-color: #ffffff;
+    color: #111827;
+    border: 2px solid #94a3b8;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+body.admin-body input::placeholder,
+body.admin-body textarea::placeholder {
+    color: #475569;
+}
+
+body.admin-body input:focus,
+body.admin-body textarea:focus,
+body.admin-body select:focus {
+    outline: none;
+    border-color: #06294a;
+    box-shadow: 0 0 0 3px rgba(6, 41, 74, 0.2);
+}
+
+/* Admin buttons */
+.admin-btn {
+    background: #06294a;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.admin-btn.delete {
+    background: #dc2626;
+}
+
+/* Admin links */
+.admin-link {
+    color: #06294a;
+    text-decoration: none;
+    font-weight: bold;
 }
