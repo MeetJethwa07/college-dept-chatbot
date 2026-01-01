@@ -392,3 +392,23 @@ body.admin-body select:focus {
     text-decoration: none;
     font-weight: bold;
 }
+
+/* ===== ADMIN TOP ACTIONS LAYOUT ===== */
+.top-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-btn {
+    background-color: #dc2626;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: #b91c1c;
+}
