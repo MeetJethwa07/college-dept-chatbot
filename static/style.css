@@ -412,3 +412,87 @@ body.admin-body select:focus {
 .logout-btn:hover {
     background-color: #b91c1c;
 }
+/* ========================================= */
+/* 🔥 FORCE MOBILE FULLSCREEN CHATBOT 🔥 */
+/* ========================================= */
+@media (max-width: 768px) {
+
+    body:not(.admin-body) {
+        display: block !important;
+        height: 100svh;
+        align-items: unset !important;
+        justify-content: unset !important;
+    }
+
+    .chat-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100svh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #chat-window {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    #chat-form {
+        margin-bottom: env(safe-area-inset-bottom);
+    }
+
+    #user-input {
+        font-size: 16px;
+    }
+}
+/* ========================================= */
+/* 📱 MOBILE FIX: ADMIN & SEND BUTTON OVERLAP */
+/* ========================================= */
+@media (max-width: 768px) {
+
+    /* Move Admin button up on mobile */
+    .admin-fab {
+        bottom: 90px !important;
+        right: 16px !important;
+    }
+
+    /* Ensure chat input stays above bottom */
+    #chat-form {
+        padding-bottom: 10px;
+    }
+}
+/* ================================= */
+/* 🔐 ADMIN FLOATING BUTTON */
+/* ================================= */
+.admin-fab {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: #2563eb;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.admin-fab:hover {
+    background: #1e40af;
+}
+
+/* ========================================= */
+/* 📱 MOBILE FIX: AVOID SEND BUTTON OVERLAP */
+/* ========================================= */
+@media (max-width: 768px) {
+    .admin-fab {
+        bottom: 90px; /* moves above chat input */
+        right: 16px;
+    }
+}

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KJSIT ChatBot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -20,17 +21,7 @@
                 </div>
             </div>
         </div>
-<a href="/admin" style="
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    background: #2563eb;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 14px;
-">
+<a href="/admin" class="admin-fab">
     🔐 Admin
 </a>
         <form id="chat-form">
