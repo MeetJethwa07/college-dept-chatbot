@@ -32,15 +32,15 @@ def load_knowledge():
 DEPT_KNOWLEDGE = load_knowledge()
 
 
-def get_timetable(class_name, day_name):
+def get_timetable(day_name):
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT time, subject, room, teacher
+        SELECT day, time_from, time_to, subject, room, faculty, class_group
         FROM timetable
-        WHERE class_name = ? AND day = ?
-    """, (class_name, day_name))
+        WHERE LOWER(day) = LOWER(?)
+    """, (day_name,))
 
     rows = cursor.fetchall()
     conn.close()
@@ -309,13 +309,13 @@ def chat():
         if not found_day:
             found_day = "monday"
 
-        rows = get_timetable(class_name, found_day)
+        rows = get_timetable(found_day)
 
         if rows:
             summary = f"📅 Timetable for {class_name} on {found_day.capitalize()}:\n\n"
 
-            for time, subject, room, teacher in rows:
-                summary += f"⏱ {time} → {subject} in {room} ({teacher})\n"
+            for day, time_from, time_to, subject, room, faculty, class_group in rows:
+                summary += f"⏱ {time_from} - {time_to} → {subject} in {room} | Batch: {class_group} ({faculty})\n"
 
             return jsonify({"reply": summary})
         else:

@@ -1,6 +1,6 @@
 import sqlite3
 
-# Connect to SQLite DB
+# Connect once
 conn = sqlite3.connect("college.db")
 cursor = conn.cursor()
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS faculty (
 )
 """)
 
-# Clear faculty (static data)
+# Clear old faculty data
 cursor.execute("DELETE FROM faculty")
 
 faculty_data = [
@@ -31,7 +31,7 @@ faculty_data = [
     ("SK", "Sandhya Devendra Kadam", "A.I", "sandhyakadam@somaiya.edu", "A-09"),
     ("JK", "Jayashree Vivekanand Khanapuri", "Image Processing", "jayashreek@somaiya.edu", "A-10"),
     ("SP", "Sunil Devidas Patil", "Random Signal Analysis", "sunilpatil@somaiya.edu", "A-11"),
-    ("TP", "Thulasi G Pillai", "Product Life-Cycle Management", "hulasi@somaiya.edu", "A-12"),
+    ("TP", "Thulasi G Pillai", "Product Life-Cycle Management", "thulasi@somaiya.edu", "A-12"),
     ("SM", "Sandeep Shivram Mishra", "Linear Integrated Circuit", "smishra@somaiya.edu", "A-13"),
 ]
 
@@ -41,61 +41,24 @@ VALUES (?, ?, ?, ?, ?)
 """, faculty_data)
 
 
-# ================= NOTICES TABLE =================
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS notices (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    description TEXT,
-    category TEXT,
-    posted_on DATE
-)
-""")
-
-# Clear notices (static data)
-cursor.execute("DELETE FROM notices")
-
-notices_data = [
-    ("Unit Test 1", "UT-1 starts from 20 September", "Exam", "2025-09-15"),
-    ("Project Review", "Final year project review on 25 September", "Academic", "2025-09-20"),
-    ("Holiday", "Ganesh Chaturthi holiday", "General", "2025-09-18")
-]
-
-cursor.executemany("""
-INSERT INTO notices (title, description, category, posted_on)
-VALUES (?, ?, ?, ?)
-""", notices_data)
-
-
 # ================= TIMETABLE TABLE =================
+cursor.execute("DROP TABLE IF EXISTS timetable")
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS timetable (
+CREATE TABLE timetable (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    class_name TEXT,
     day TEXT,
-    time TEXT,
+    time_from TEXT,
+    time_to TEXT,
     subject TEXT,
+    faculty TEXT,
     room TEXT,
-    teacher TEXT
+    class_group TEXT
 )
 """)
 
-# Clear timetable (static data)
-cursor.execute("DELETE FROM timetable")
 
-timetable_data = [
-    ("EXTC A", "monday", "9:00-10:00", "Microcontroller", "Lab-1", "Swati Shinde"),
-    ("EXTC A", "monday", "10:00-11:00", "Python", "Room-204", "Pankaj Deshmukh"),
-    ("EXTC A", "tuesday", "9:00-10:00", "DSA", "Room-203", "Rashmi Adatkar"),
-]
-
-cursor.executemany("""
-INSERT INTO timetable (class_name, day, time, subject, room, teacher)
-VALUES (?, ?, ?, ?, ?, ?)
-""", timetable_data)
-
-
-# ================= CHATBOT LOGS (DYNAMIC) =================
+# ================= CHATBOT LOGS =================
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS chatbot_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,7 +67,7 @@ CREATE TABLE IF NOT EXISTS chatbot_logs (
 )
 """)
 
-
+# Save everything once
 conn.commit()
 conn.close()
 
