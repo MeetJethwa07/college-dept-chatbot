@@ -57,6 +57,32 @@ CREATE TABLE timetable (
 )
 """)
 
+# ================= SUBJECTS TABLE =================
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS subjects (
+    subject_code TEXT PRIMARY KEY,
+    subject_name TEXT
+)
+""")
+
+# ================= FACULTY TABLE (clean version) =================
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS faculty_new (
+    faculty_code TEXT PRIMARY KEY,
+    name TEXT,
+    email TEXT,
+    cabin TEXT
+)
+""")
+
+# ================= FACULTY-SUBJECT MAPPING =================
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS faculty_subjects (
+    faculty_code TEXT,
+    subject_code TEXT,
+    role TEXT
+)
+""")
 
 # ================= CHATBOT LOGS =================
 cursor.execute("""
