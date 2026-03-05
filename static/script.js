@@ -12,7 +12,7 @@ function addMessage(text, sender = "bot") {
 
     const bubble = document.createElement("div");
     bubble.classList.add("bubble");
-    bubble.innerHTML = text.replace(/\n/g, "<br>");
+    bubble.innerHTML = text;
 
 
     if (sender === "user") {
@@ -76,3 +76,8 @@ chatForm.addEventListener("submit", async (e) => {
         console.error(err);
     }
 });
+
+function toggleSources(element) {
+    const content = element.nextElementSibling;
+    content.classList.toggle("show");
+}

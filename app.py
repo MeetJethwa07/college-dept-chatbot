@@ -1,5 +1,6 @@
 import os
-import requests
+from rag.vector_store import query_documents
+from groq import Groq
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv
 import sqlite3
@@ -10,9 +11,8 @@ app = Flask(__name__)
 app.secret_key = "super_secret_admin_key"
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST", "chatgpt-42.p.rapidapi.com")
-RAPIDAPI_ENDPOINT = os.getenv("RAPIDAPI_ENDPOINT", "/gpt4o")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+groq_client = Groq(api_key=GROQ_API_KEY)
 
 
 # ================= HELPERS =================
@@ -245,36 +245,71 @@ def chat():
 
         return jsonify({"reply": "No notices right now."})
 
-    # -------- AI FALLBACK --------
-    if not RAPIDAPI_KEY:
-        return jsonify({"reply": "AI key missing"}), 500
+    conn.close()
 
-    payload = {
-        "messages": [
-            {"role": "system", "content": "You are a helpful college assistant."},
-            {"role": "user", "content": DEPT_KNOWLEDGE + "\n\n" + user_message}
-        ]
-    }
-
-    headers = {
-        "content-type": "application/json",
-        "X-RapidAPI-Key": RAPIDAPI_KEY,
-        "X-RapidAPI-Host": RAPIDAPI_HOST,
-    }
+    # -------- AI FALLBACK (Groq + RAG) --------
+    if not GROQ_API_KEY:
+        return jsonify({"reply": "Groq API key missing"}), 500
 
     try:
-        resp = requests.post(
-            f"https://{RAPIDAPI_HOST}{RAPIDAPI_ENDPOINT}",
-            json=payload,
-            headers=headers,
-            timeout=30
+        retrieved = query_documents(user_message, top_k=5)
+
+        if not retrieved:
+            return jsonify({"reply": "I could not find relevant information."})
+
+        documents = [doc for doc, meta in retrieved]
+        # Keep only top 2 most relevant
+        sources = []
+        for doc, meta in retrieved[:2]:
+            if meta["source"] not in sources:
+                sources.append(meta["source"])
+        context = "\n\n".join(documents)
+
+        completion = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are the official AI assistant for K J Somaiya Institute of Technology.
+
+Answer strictly using the provided context.
+Give a clear and concise answer.
+If the answer is not in the context, say:
+'Information not found.'"""
+                },
+                {
+                    "role": "user",
+                    "content": f"Context:\n{context}\n\nQuestion:\n{user_message}"
+                }
+            ],
+            temperature=0.2
         )
 
-        return jsonify({"reply": resp.json().get("result", "No response")})
+        reply = completion.choices[0].message.content.strip()
+        if reply.lower().strip() == "information not found.":
+            return jsonify({"reply": reply})
+
+        # Attach sources
+        source_links = ""
+
+        for url in sources:
+            slug = url.rstrip("/").split("/")[-1]
+            title = slug.replace("-", " ").title()
+            source_links += f'<a href="{url}" target="_blank" class="source-link">{title}</a>'
+
+        source_text = (
+            '<div class="sources-box">'
+            '<div class="sources-toggle" onclick="toggleSources(this)">🔗 Sources</div>'
+            '<div class="sources-content">'
+            f'{source_links}'
+            '</div>'
+            '</div>'
+        )
+
+        return jsonify({"reply": reply + source_text})
 
     except Exception as e:
-        return jsonify({"reply": f"Error: {e}"}), 500
-
+        return jsonify({"reply": f"Groq Error: {str(e)}"}), 500
 
 # ================= RUN =================
 
