@@ -1,5 +1,8 @@
 flask
-openai
+groq
 python-dotenv
 requests
 gunicorn 
+chromadb
+beautifulsoup4
+lxml
