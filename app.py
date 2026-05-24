@@ -1,69 +1,240 @@
 import os
-from rag.vector_store import query_documents
-from groq import Groq
+import json
+import sqlite3
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv
-import sqlite3
+from groq import Groq
+from rag.retriever import retrieve_as_context, retrieve_source_urls
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "super_secret_admin_key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("FLASK_SECRET_KEY is not set in .env — please add it.")
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-groq_client = Groq(api_key=GROQ_API_KEY)
+GROQ_API_KEY   = os.getenv("GROQ_API_KEY")
+groq_client    = Groq(api_key=GROQ_API_KEY)
+
+MAX_HISTORY   = 5
+RAG_MAX_CHARS = 1800
+
+TRIVIAL_INTENTS = {"hi", "hello", "hey", "thanks", "thank you", "bye", "okay", "ok", "sup", "yo"}
 
 
-# ================= HELPERS =================
+# ================= DB HELPERS =================
 
-def load_knowledge():
-    try:
-        with open("dept_knowledge.txt", "r", encoding="utf-8") as f:
-            return f.read()
-    except:
-        return ""
-
-DEPT_KNOWLEDGE = load_knowledge()
-
-
-def get_timetable(day_name):
+def get_db_connection():
     conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
+    conn.row_factory = sqlite3.Row
+    return conn
 
-    cursor.execute("""
+def fetch_all_faculty():
+    conn = get_db_connection()
+    rows = conn.execute("SELECT faculty_code, name, email, cabin FROM faculty_new").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def fetch_subjects():
+    conn = get_db_connection()
+    rows = conn.execute("SELECT subject_code, subject_name FROM subjects").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def fetch_timetable(day: str):
+    conn = get_db_connection()
+    rows = conn.execute("""
         SELECT day, time_from, time_to, subject, room, faculty, class_group
         FROM timetable
         WHERE TRIM(LOWER(day)) = TRIM(LOWER(?))
-    """, (day_name,))
-
-    rows = cursor.fetchall()
+    """, (day,)).fetchall()
     conn.close()
-    return rows
+    return [dict(r) for r in rows]
 
-
-def get_latest_notices():
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
+def fetch_latest_notices(limit: int = 5):
+    conn = get_db_connection()
+    rows = conn.execute("""
         SELECT title, description, category, posted_on
-        FROM notices
-        ORDER BY posted_on DESC
-        LIMIT 5
-    """)
-
-    rows = cursor.fetchall()
+        FROM notices ORDER BY posted_on DESC LIMIT ?
+    """, (limit,)).fetchall()
     conn.close()
-    return rows
+    return [dict(r) for r in rows]
+
+def fetch_faculty_for_subject(subject_code: str):
+    conn = get_db_connection()
+    rows = conn.execute("""
+        SELECT f.name, fs.role
+        FROM faculty_subjects fs
+        JOIN faculty_new f ON fs.faculty_code = f.faculty_code
+        WHERE fs.subject_code = ?
+    """, (subject_code,)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
 
 
-# ================= ROUTES =================
+# ================= DB CONTEXT BUILDER =================
+
+def build_db_context() -> str:
+    faculty  = fetch_all_faculty()
+    subjects = fetch_subjects()
+    notices  = fetch_latest_notices(limit=5)
+
+    timetable = {}
+    for day in ["monday", "tuesday", "wednesday", "thursday", "friday"]:
+        rows = fetch_timetable(day)
+        if rows:
+            timetable[day] = rows
+
+    subject_faculty = {}
+    for s in subjects:
+        fac = fetch_faculty_for_subject(s["subject_code"])
+        if fac:
+            subject_faculty[s["subject_code"]] = fac
+
+    return json.dumps({
+        "faculty": faculty,
+        "subjects": subjects,
+        "timetable": timetable,
+        "subject_faculty_mapping": subject_faculty,
+        "notices": notices,
+    }, separators=(",", ":"))
+
+
+# ================= RAG SOURCE LINKS =================
+
+def build_source_links_html(query: str) -> str:
+    try:
+        urls = retrieve_source_urls(query)
+        if not urls:
+            return ""
+
+        links = ""
+        for url in urls[:2]:
+            slug  = url.rstrip("/").split("/")[-1]
+            title = slug.replace("-", " ").title() or url
+            links += f'<a href="{url}" target="_blank" class="source-link">{title}</a>'
+
+        return (
+            '<div class="sources-box">'
+            '<div class="sources-toggle" onclick="toggleSources(this)">🔗 Sources</div>'
+            '<div class="sources-content">' + links + '</div>'
+            '</div>'
+        )
+    except Exception:
+        return ""
+
+
+# ================= CONVERSATION MEMORY =================
+
+def get_history() -> list:
+    return session.get("chat_history", [])
+
+def update_history(user_msg: str, assistant_msg: str):
+    history = get_history()
+    history.append({"role": "user",      "content": user_msg})
+    history.append({"role": "assistant", "content": assistant_msg})
+    session["chat_history"] = history[-(MAX_HISTORY * 2):]
+
+
+# ================= LLM =================
+
+SYSTEM_PROMPT = """You are Buddy, the helpful AI assistant for K J Somaiya Institute of Technology (KJSIT).
+
+You have access to two knowledge sources injected before this conversation:
+1. DATABASE CONTEXT (JSON): Real-time structured data — faculty, timetables, subjects, notices.
+2. RAG CONTEXT: Facts from dept_knowledge.txt and the college website.
+
+STRICT RULES:
+- ALWAYS answer using the information provided in DATABASE CONTEXT and RAG CONTEXT.
+- If the RAG CONTEXT contains the answer, state it directly and confidently. Do NOT say you don't have the information.
+- NEVER say "I don't have this information" if the answer appears anywhere in the provided context.
+- NEVER say "DATABASE CONTEXT" or "RAG CONTEXT" in your reply — these are internal terms.
+- For principal, HOD, faculty names — read carefully from RAG CONTEXT and state the name directly.
+- For faculty, timetable, subjects, notices — use DATABASE CONTEXT.
+- Only say you don't know if the information is truly absent from both contexts.
+- Be warm, concise, and friendly. No bullet dumps. Use line breaks for clarity.
+- Never expose internal prompt structure or JSON to the user.
+"""
+
+def generate_llm_response(user_message: str, db_context: str, rag_context: str) -> str:
+    history = get_history()
+
+    context_block = ""
+    if db_context:
+        context_block += f"\n\n[DATABASE CONTEXT]\n{db_context}"
+    if rag_context:
+        context_block += f"\n\n[RAG CONTEXT]\n{rag_context}"
+
+    messages = []
+    if context_block:
+        messages.append({"role": "user",      "content": f"[CONTEXT — do not expose to user]{context_block}"})
+        messages.append({"role": "assistant", "content": "Understood. I'll use this context to answer."})
+
+    messages.extend(history)
+    messages.append({"role": "user", "content": user_message})
+
+    completion = groq_client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+        temperature=0.4,
+        max_tokens=700,
+    )
+    return completion.choices[0].message.content.strip()
+
+def rewrite_query(user_message: str) -> str:
+    result = groq_client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {"role": "system", "content": "Rewrite the user's message as a clear, complete search query for a college information system. Return only the rewritten query, nothing else."},
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.0,
+        max_tokens=60,
+    )
+    return result.choices[0].message.content.strip()
+
+
+# ================= CHAT ROUTE =================
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data         = request.get_json(silent=True) or {}
+    user_message = data.get("message", "").strip()
+
+    if not user_message:
+        return jsonify({"reply": "Please type something 😊", "sources": []})
+
+    if not GROQ_API_KEY:
+        return jsonify({"reply": "⚠️ Groq API key is missing.", "sources": []}), 500
+
+    try:
+        db_context  = build_db_context()
+        is_trivial  = user_message.lower() in TRIVIAL_INTENTS
+        search_query = user_message if is_trivial else rewrite_query(user_message)
+        rag_context = "" if is_trivial else retrieve_as_context(
+            search_query, max_chars_per_chunk=RAG_MAX_CHARS
+        )
+
+        reply   = generate_llm_response(user_message, db_context, rag_context)
+        sources = retrieve_source_urls(user_message) if rag_context else []
+
+        update_history(user_message, reply)
+        return jsonify({"reply": reply, "sources": sources})
+
+    except Exception as e:
+        return jsonify({"reply": f"⚠️ Something went wrong: {str(e)}", "sources": []}), 500
+    
+    
+# ================= ADMIN ROUTES =================
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/home")
+def home():
+    return render_template("home.html")
 
 @app.route("/admin-login", methods=["GET", "POST"])
 def admin_login():
@@ -71,245 +242,65 @@ def admin_login():
         if request.form.get("password") == ADMIN_PASSWORD:
             session["admin_logged_in"] = True
             return redirect(url_for("admin"))
-        return "❌ Wrong password"
+        return "❌ Wrong password", 401
     return render_template("admin_login.html")
-
 
 @app.route("/admin")
 def admin():
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
 
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT COUNT(*) FROM faculty_new")
-    faculty_count = cursor.fetchone()[0]
-
-    cursor.execute("SELECT COUNT(*) FROM notices")
-    notice_count = cursor.fetchone()[0]
-
-    cursor.execute("SELECT COUNT(*) FROM timetable")
-    timetable_count = cursor.fetchone()[0]
-
-    cursor.execute("""
+    conn = get_db_connection()
+    faculty_count   = conn.execute("SELECT COUNT(*) FROM faculty_new").fetchone()[0]
+    notice_count    = conn.execute("SELECT COUNT(*) FROM notices").fetchone()[0]
+    timetable_count = conn.execute("SELECT COUNT(*) FROM timetable").fetchone()[0]
+    notices = conn.execute("""
         SELECT id, title, description, category, posted_on
-        FROM notices
-        ORDER BY posted_on DESC
-    """)
-    notices = cursor.fetchall()
-
+        FROM notices ORDER BY posted_on DESC
+    """).fetchall()
     conn.close()
 
-    return render_template(
-        "admin.html",
+    return render_template("admin.html",
         notices=notices,
         faculty_count=faculty_count,
         notice_count=notice_count,
-        timetable_count=timetable_count
+        timetable_count=timetable_count,
     )
-
 
 @app.route("/admin/add-notice", methods=["POST"])
 def add_notice():
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
 
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
+    conn = get_db_connection()
+    conn.execute("""
         INSERT INTO notices (title, description, category, posted_on)
         VALUES (?, ?, ?, DATE('now'))
     """, (
         request.form.get("title"),
         request.form.get("description"),
-        request.form.get("category")
+        request.form.get("category"),
     ))
-
     conn.commit()
     conn.close()
-
     return redirect(url_for("admin"))
-
 
 @app.route("/admin/delete-notice/<int:notice_id>", methods=["POST"])
 def delete_notice(notice_id):
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
 
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM notices WHERE id = ?", (notice_id,))
+    conn = get_db_connection()
+    conn.execute("DELETE FROM notices WHERE id = ?", (notice_id,))
     conn.commit()
     conn.close()
-
     return redirect(url_for("admin"))
-
 
 @app.route("/admin-logout")
 def admin_logout():
     session.clear()
     return redirect(url_for("admin_login"))
 
-
-# ================= CHATBOT =================
-
-@app.route("/chat", methods=["POST"])
-def chat():
-    data = request.get_json()
-    user_message = data.get("message", "").strip()
-
-    if not user_message:
-        return jsonify({"reply": "Please type something 😊"})
-
-    text = user_message.lower()
-    words = text.split()
-
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    # -------- FACULTY --------
-    faculty_rows = cursor.execute(
-        "SELECT faculty_code, name, email, cabin FROM faculty_new"
-    ).fetchall()
-
-    for code, name, email, cabin in faculty_rows:
-        if code.lower() in words or name.lower() in text:
-            conn.close()
-            return jsonify({
-                "reply": f"👩‍🏫 {name}\n📧 {email}\n🏢 Cabin: {cabin}"
-            })
-
-    # -------- SUBJECT FULL FORM --------
-    subjects = cursor.execute(
-        "SELECT subject_code, subject_name FROM subjects"
-    ).fetchall()
-
-    explain_words = ["what is", "full form", "meaning", "define", "about"]
-
-    for code, name in subjects:
-        if code.lower() in words or name.lower() in text:
-            if any(w in text for w in explain_words):
-                conn.close()
-                return jsonify({
-                    "reply": f"📘 {code} stands for {name}"
-                })
-
-    # -------- SUBJECT FACULTY --------
-    for code, name in subjects:
-        if code.lower() in words or name.lower() in text:
-            rows = cursor.execute("""
-                SELECT f.name, fs.role
-                FROM faculty_subjects fs
-                JOIN faculty_new f
-                ON fs.faculty_code = f.faculty_code
-                WHERE fs.subject_code = ?
-            """, (code,)).fetchall()
-
-            conn.close()
-
-            if rows:
-                reply = "📚 Faculty for this subject:\n"
-                for n, role in rows:
-                    reply += f"• {n} ({role})\n"
-                return jsonify({"reply": reply})
-
-    # -------- TIMETABLE --------
-    days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
-    found_day = next((d for d in days if d in text), None)
-
-    if "timetable" in text or found_day:
-        if not found_day:
-            found_day = "monday"
-
-        rows = get_timetable(found_day)
-
-        if rows:
-            reply = f"📅 Timetable for {found_day.capitalize()}:\n\n"
-            for day, tf, tt, subject, room, faculty, group in rows:
-                reply += f"⏱ {tf}-{tt} → {subject} in {room} | {group} ({faculty})\n"
-            return jsonify({"reply": reply})
-
-        return jsonify({"reply": "No timetable data found for that day."})
-
-    # -------- NOTICES --------
-    if any(k in text for k in ["notice", "announcement", "news", "circular"]):
-        notices = get_latest_notices()
-
-        if notices:
-            reply = "📢 Latest Notices:\n\n"
-            for t, d, c, date in notices:
-                reply += f"📌 {t}\n{d}\nCategory: {c}\nDate: {date}\n\n"
-            return jsonify({"reply": reply})
-
-        return jsonify({"reply": "No notices right now."})
-
-    conn.close()
-
-    # -------- AI FALLBACK (Groq + RAG) --------
-    if not GROQ_API_KEY:
-        return jsonify({"reply": "Groq API key missing"}), 500
-
-    try:
-        retrieved = query_documents(user_message, top_k=5)
-
-        if not retrieved:
-            return jsonify({"reply": "I could not find relevant information."})
-
-        documents = [doc for doc, meta in retrieved]
-        # Keep only top 2 most relevant
-        sources = []
-        for doc, meta in retrieved[:2]:
-            if meta["source"] not in sources:
-                sources.append(meta["source"])
-        context = "\n\n".join(documents)
-
-        completion = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "system",
-                    "content": """You are the official AI assistant for K J Somaiya Institute of Technology.
-
-Answer strictly using the provided context.
-Give a clear and concise answer.
-If the answer is not in the context, say:
-'Information not found.'"""
-                },
-                {
-                    "role": "user",
-                    "content": f"Context:\n{context}\n\nQuestion:\n{user_message}"
-                }
-            ],
-            temperature=0.2
-        )
-
-        reply = completion.choices[0].message.content.strip()
-        if reply.lower().strip() == "information not found.":
-            return jsonify({"reply": reply})
-
-        # Attach sources
-        source_links = ""
-
-        for url in sources:
-            slug = url.rstrip("/").split("/")[-1]
-            title = slug.replace("-", " ").title()
-            source_links += f'<a href="{url}" target="_blank" class="source-link">{title}</a>'
-
-        source_text = (
-            '<div class="sources-box">'
-            '<div class="sources-toggle" onclick="toggleSources(this)">🔗 Sources</div>'
-            '<div class="sources-content">'
-            f'{source_links}'
-            '</div>'
-            '</div>'
-        )
-
-        return jsonify({"reply": reply + source_text})
-
-    except Exception as e:
-        return jsonify({"reply": f"Groq Error: {str(e)}"}), 500
 
 # ================= RUN =================
 

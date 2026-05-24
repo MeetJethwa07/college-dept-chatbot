@@ -2,7 +2,8 @@ flask
 groq
 python-dotenv
 requests
-gunicorn 
+gunicorn
 chromadb
 beautifulsoup4
 lxml
+sentence-transformers

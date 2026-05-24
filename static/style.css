@@ -408,3 +408,85 @@ body.admin-body select:focus {
     font-weight: 600;
     color: #2563eb;
 }
+
+/* ── Sources pill ─────────────────────────────────── */
+.sources-wrapper {
+    margin-top: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.sources-pill {
+    background: #e8f0fe;
+    border: 1px solid #4a90d9;
+    border-radius: 20px;
+    color: #1a56a0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.sources-pill:hover {
+    background: #d0e4ff;
+    transform: scale(1.03);
+}
+
+.sources-pill.active {
+    background: #1a56a0;
+    color: #fff;
+}
+
+.sources-panel {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    left: 0;
+    margin-top: 6px;
+    min-width: 240px;
+    padding: 8px;
+    position: absolute;
+    z-index: 100;
+}
+
+.source-link-item {
+    border-radius: 6px;
+    color: #1a56a0;
+    display: block;
+    font-size: 13px;
+    padding: 6px 10px;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.source-link-item:hover {
+    background: #f0f4ff;
+    text-decoration: underline;
+}
+
+/* ── Typing indicator ─────────────────────────────── */
+.bubble.typing {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 12px 16px;
+}
+
+.bubble.typing span {
+    animation: bounce 1.2s infinite;
+    background: #888;
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+}
+
+.bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+.bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30%            { transform: translateY(-6px); }
+}

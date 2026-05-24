@@ -1,21 +1,179 @@
-Department: Electronics and Telecommunication Engineering
-
-Office Hours:
-- Department office: Monday to Friday, 9:30 AM to 5:30 PM
-- HOD meeting hours for students: Tuesday and Thursday, 3:00 PM to 4:30 PM
-
-Important Contacts:
-- HOD: Dr. Jayshree Khanapuri 
-- Department office email: jayashreek@somaiya.edu
-- Department office phone: +91-9876543210
-
-Academic Info:
-- Average class duration: 1 hour
-- Labs: 2 hours per session
-- Internal assessment: 40 marks
-- End semester exam: 60 marks
-
-General rules:
-- 75% attendance is compulsory.
-- Mobile phones are not allowed during lectures and labs.
-- For any bonafide certificate, students should apply in the department office.
+Principal of KJSIT:
+The Principal of K J Somaiya Institute of Technology (KJSIT) is Dr. Vivek Sunnapwar.
+Dr. Vivek Sunnapwar is the current Principal of KJSIT.
+The head of KJSIT college is Dr. Vivek Sunnapwar.
+Who is the principal? The principal is Dr. Vivek Sunnapwar.
+ 
+About KJSIT:
+K J Somaiya Institute of Technology (KJSIT), also known as KJSIEIT, is an autonomous engineering college located at Somaiya Ayurvihar Complex, Eastern Express Highway, Near Everard Nagar, Sion (East), Mumbai - 400 022.
+Contact: 91-22-44444408 / 44444403
+Email: info.tech@somaiya.edu
+Website: https://kjsit.somaiya.edu.in
+KJSIT is affiliated to the University of Mumbai and approved by AICTE.
+The college was established in 1983 and is part of the Somaiya Vidyavihar University campus.
+ 
+Programmes Offered:
+KJSIT offers the following undergraduate and postgraduate programmes:
+- B.Tech in Computer Engineering (COMP) - 120 seats
+- B.Tech in Electronics and Telecommunication Engineering (EXTC) - 120 seats
+- B.Tech in Information Technology (IT) - 120 seats
+- B.Tech in Artificial Intelligence and Data Science (AIDS) - 120 seats
+- M.Tech in Artificial Intelligence
+- PhD in Computer Engineering, Electronics and Telecommunication, Information Technology
+ 
+Admission Process:
+Students can get admission to KJSIT through the following process:
+1. For First Year B.Tech: Admissions are based on MHT-CET or JEE Main scores through the Centralized Admission Process (CAP) conducted by the State Common Entrance Test Cell, Maharashtra.
+2. For Direct Second Year (Lateral Entry): Diploma holders can apply through the Diploma to Degree (D2D) CAP rounds.
+3. Students must register on the official Maharashtra CAP portal and fill their college preferences.
+4. Merit lists are published and seat allotment is done round by round.
+5. Required documents: 10th marksheet, 12th marksheet, leaving certificate, caste certificate (if applicable), MHT-CET or JEE scorecard, passport size photos, Aadhaar card.
+6. For more details visit: https://kjsit.somaiya.edu.in/en/admission
+7. Management quota seats are also available directly through the college.
+How to take admission in KJSIT? Apply through MHT-CET CAP rounds on the Maharashtra state portal.
+ 
+Attendance Policy:
+75% attendance is compulsory for all students at KJSIT.
+Students with less than 75% attendance will not be allowed to sit for university exams.
+Attendance is tracked subject-wise every semester.
+Medical leave or other genuine reasons may be considered for condonation by the HOD.
+ 
+HOD of EXTC Department:
+The Head of Department (HOD) of Electronics and Telecommunication Engineering (EXTC) at KJSIT is Dr. Jayshree Khanapuri.
+Email of HOD EXTC: jayashreek@somaiya.edu
+Who is the HOD of EXTC? Dr. Jayshree Khanapuri is the HOD of EXTC department.
+ 
+Examination and Assessment:
+- Internal Assessment (IA): 40 marks per subject
+- End Semester Examination (ESE): 60 marks per subject
+- Total marks per subject: 100
+- Students must pass both internal and external assessment separately.
+- Exam Cell Contact Person: Dr. Vaishali Ghadyalji
+- Exam Cell Phone: +022-24061313, 24061314
+- Exam Cell Email: examcell@somaiya.edu
+- Supplementary exams are held for students who fail in any subject.
+ 
+Placement Cell:
+The Training and Placement Cell at KJSIT helps students get internships and job placements.
+- Contact Person: Mr. Ghanashyam Phadke, Associate Head - Career Management
+- Phone: +91 22 24061412
+- Email: placements.tech@somaiya.edu
+- Top companies that have recruited from KJSIT include TCS, Infosys, Wipro, Capgemini, L&T, and many more.
+- The placement cell conducts regular workshops, mock interviews, and aptitude training.
+ 
+Library:
+KJSIT has a well-equipped central library with thousands of books, journals, and digital resources.
+The library provides access to online databases and e-journals.
+Students can borrow books using their library card.
+ 
+Laboratories:
+KJSIT has well-equipped labs for all departments including:
+- Electronics and Communication Labs
+- Computer Labs
+- Networking Labs
+- DSP and VLSI Labs
+- IoT and Embedded Systems Labs
+- AI and Data Science Labs
+ 
+Fee Structure:
+The approximate annual tuition fee for B.Tech programmes at KJSIT is around Rs. 1,50,000 to Rs. 2,00,000 per year depending on the programme and category.
+Students from reserved categories may be eligible for government scholarships and fee waivers.
+EBC (Economically Backward Class) and other government scholarships are available.
+ 
+Scholarships:
+KJSIT students can apply for the following scholarships:
+- Government of Maharashtra scholarships for SC/ST/OBC/EBC students
+- Freeship card for eligible students
+- Merit scholarships for academically outstanding students
+- Somaiya trust scholarships
+ 
+EXTC Semester 1 Subjects:
+Engineering Mathematics-I, Engineering Physics, Engineering Chemistry,
+Basic Electrical Engineering, Engineering Mechanics,
+Basic Electronics Engineering, Engineering Drawing
+ 
+EXTC Semester 2 Subjects:
+Engineering Mathematics-II, Engineering Physics-II,
+Structured Programming Approach, Basic Electronics Engineering-II,
+Environmental Studies, Engineering Drawing-II
+ 
+EXTC Semester 3 Subjects:
+Applied Mathematics-III, Electronic Devices and Circuits,
+Digital Logic Design, Network Analysis,
+Electrical Networks and Systems, Object Oriented Programming
+ 
+EXTC Semester 4 Subjects:
+Applied Mathematics-IV, Microprocessors,
+Analog Electronics, Signals and Systems,
+Wave Theory and Propagation, Discrete Time Signal Processing
+ 
+EXTC Semester 5 Subjects:
+VLSI Design, Digital Communication,
+Microcontrollers and Applications, Random Signal Analysis,
+Electromagnetic Engineering, Computer Networks
+ 
+EXTC Semester 6 Subjects:
+Digital Signal Processing, Antenna and Wave Propagation,
+Mobile Communication, Power Electronics,
+Embedded Systems, Advanced Microprocessors
+ 
+EXTC Semester 7 Subjects:
+Optical Communication Networks, Wireless Communication,
+Image Processing, Project Management,
+Elective-I, Elective-II
+ 
+EXTC Semester 8 Subjects:
+Advanced Digital Communication, Satellite Communication,
+VLSI Signal Processing, Project (Final Year),
+Elective-III, Elective-IV
+ 
+COMP Semester 7 Subjects:
+Machine Learning, Cloud Computing,
+Distributed Computing, Elective-I,
+Elective-II, Project
+ 
+IT Semester 7 Subjects:
+Information Security, Enterprise Network Design,
+Elective-I, Elective-II, Project
+ 
+AIDS Semester 7 Subjects:
+Deep Learning, Big Data Analytics,
+Natural Language Processing, Elective-I, Project
+ 
+Student Activities and Clubs:
+KJSIT has various student clubs and technical committees including:
+- IEEE Student Branch
+- CSI (Computer Society of India) Student Branch
+- NSS (National Service Scheme)
+- Cultural Committee
+- Sports Committee
+- Entrepreneurship Cell (E-Cell)
+- Technical Festival (Technotsav)
+- Cultural Festival
+ 
+Campus Facilities:
+- Canteen with affordable food options
+- Sports ground and indoor sports facilities
+- Wi-Fi enabled campus
+- Boys and Girls Common Rooms
+- Seminar Hall and Auditorium
+- Medical Room / First Aid facility
+ 
+Anti-Ragging Policy:
+KJSIT has a strict zero-tolerance anti-ragging policy as per UGC guidelines.
+Students can report ragging incidents to the Anti-Ragging Committee.
+Anti-ragging helpline: 1800-180-5522
+ 
+Grievance Redressal:
+Students can raise grievances through the Student Grievance Redressal Committee.
+The Internal Complaints Committee (ICC) handles complaints related to gender-based issues.
+ 
+NAAC Accreditation:
+KJSIT is accredited by NAAC (National Assessment and Accreditation Council).
+The college has received NBA accreditation for several programmes.
+ 
+How to contact KJSIT:
+Phone: 91-22-44444408 / 44444403
+Email: info.tech@somaiya.edu
+Address: Somaiya Ayurvihar Complex, Eastern Express Highway, Near Everard Nagar, Sion (East), Mumbai - 400 022
+Website: https://kjsit.somaiya.edu.in
